@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Night We Met - Theater Mode</title>
+<style>
+body {
+  margin: 0;
+  height: 100vh;
+  background: linear-gradient(135deg, #3b0a45, #7b1e3a);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  font-family: 'Arial', sans-serif;
+  position: relative;
+}
+.video-container {
+  width: 90%;
+  max-width: 900px;
+  aspect-ratio: 16/9;
+  border-radius: 15px;
+  box-shadow: 0 0 40px rgba(0,0,0,0.7);
+  overflow: hidden;
+  position: relative;
+}
+video {
+  width: 100%;
+  height: 100%;
+  border-radius: 15px;
+}
+#playBtn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 20px 40px;
+  font-size: 22px;
+  background: #ff6bcb;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 0 15px rgba(0,0,0,0.5);
+  z-index: 10;
+}
+</style>
+</head>
+<body>
+
+<div class="video-container">
+  <video id="video" loop playsinline>
+    <source src="The Night We Met – 11_11 (Dreamy Edition) by Lord Huron.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+</div>
+
+<button id="playBtn">Tap to Play 🎵</button>
+
+<script>
+const video = document.getElementById('video');
+const playBtn = document.getElementById('playBtn');
+
+playBtn.addEventListener('click', () => {
+  // Force play with user interaction
+  video.muted = false; // ensure sound is unmuted
+  video.play().catch(() => {
+    alert("Tap the video once more to start the sound.");
+  });
+  playBtn.style.display = 'none';
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Love Memory Match 💖</title>
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #3b0a45, #7b1e3a);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+h1 { margin-bottom: 10px; }
+#game-board {
+  display: grid;
+  grid-template-columns: repeat(4, 70px);
+  grid-gap: 10px;
+  margin-top: 20px;
+}
+.card {
+  width: 70px;
+  height: 70px;
+  background: #ff6bcb;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.3s;
+}
+.card.flipped {
+  background: #ffd166;
+  transform: rotateY(180deg);
+}
+#message {
+  margin-top: 30px;
+  font-size: 22px;
+  line-height: 1.4;
+}
+</style>
+</head>
+<body>
+<h1>💖 Love Memory Match 💖</h1>
+<p>Find all the matching love emojis!</p>
+<div id="game-board"></div>
+<div id="message"></div>
+
+<script>
+const board = document.getElementById('game-board');
+const message = document.getElementById('message');
+
+// Love emojis (pairs)
+let emojis = ['🕊','🥝','💖','💌','✨','💞','💗','💓'];
+let cardsArray = [...emojis, ...emojis];
+cardsArray.sort(() => Math.random() - 0.5);
+
+let flippedCards = [];
+let matched = 0;
+
+// Best friend quotes
+const bestieQuotes = [
+  "You're my sunshine on cloudy days ☀️",
+  "Forever grateful for your laughter and love 💖",
+  "Best friends make life sparkle ✨",
+  "You're my partner in all adventures 🕊",
+  "Life is sweeter with you by my side 🥝",
+  "Friends like you are rare gems 💎",
+  "You're the peanut butter to my jelly 🥰",
+];
+
+// Create cards
+cardsArray.forEach((emoji, index)=>{
+  const card = document.createElement('div');
+  card.classList.add('card');
+  card.dataset.emoji = emoji;
+  card.addEventListener('click', () => flipCard(card));
+  board.appendChild(card);
+});
+
+function flipCard(card){
+  if(card.classList.contains('flipped') || flippedCards.length === 2) return;
+  card.classList.add('flipped');
+  card.textContent = card.dataset.emoji;
+  flippedCards.push(card);
+
+  if(flippedCards.length === 2){
+    setTimeout(checkMatch, 500);
+  }
+}
+
+function checkMatch(){
+  const [card1, card2] = flippedCards;
+  if(card1.dataset.emoji === card2.dataset.emoji){
+    matched += 2;
+    card1.style.background = '#06d6a0';
+    card2.style.background = '#06d6a0';
+  } else {
+    card1.classList.remove('flipped');
+    card2.classList.remove('flipped');
+    card1.textContent = '';
+    card2.textContent = '';
+  }
+  flippedCards = [];
+
+  if(matched === cardsArray.length){
+    const randomQuote = bestieQuotes[Math.floor(Math.random() * bestieQuotes.length)];
+    message.textContent = "🎉 You Won! 🎉\n" + randomQuote;
+  }
+}
+</script>
+</body>
+</html>

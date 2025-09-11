@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>For My Bestestest 🫂</title>
+  <style>
+    /* Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #3b0a0a, #800000);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Password container */
+    #password-container {
+      text-align: center;
+    }
+
+    #password-container h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    #password-container input {
+      padding: 10px 15px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      font-size: 1rem;
+      margin-right: 10px;
+    }
+
+    #password-container button {
+      padding: 10px 20px;
+      background: linear-gradient(45deg, #800000, #a52a2a);
+      border: none;
+      border-radius: 50px;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    #password-container button:hover {
+      background: linear-gradient(45deg, #a52a2a, #800000);
+    }
+
+    /* Main content */
+    #main-content {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    header {
+      text-align: center;
+      padding: 2rem 1rem;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      color: #fff;
+      text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+    }
+
+    header p {
+      font-size: 1.2rem;
+      margin-top: 0.5rem;
+      color: #f8d7da;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      width: 90%;
+      max-width: 1000px;
+      padding-bottom: 3rem;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      padding: 1.5rem;
+      text-align: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+      color: #3b0a0a;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+    }
+
+    .card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      color: #800000;
+    }
+
+    .card p {
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      color: #555;
+    }
+
+    .card a {
+      display: inline-block;
+      padding: 10px 20px;
+      background: linear-gradient(45deg, #800000, #a52a2a);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 50px;
+      transition: background 0.3s;
+    }
+
+    .card a:hover {
+      background: linear-gradient(45deg, #a52a2a, #800000);
+    }
+
+    footer {
+      margin-top: auto;
+      padding: 1rem;
+      text-align: center;
+      color: #f8d7da;
+      font-size: 0.9rem;
+    }
+
+    /* Error message */
+    #error-msg {
+      color: #ffb3b3;
+      margin-top: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Password Prompt -->
+  <div id="password-container">
+    <h1>Enter Password 💌</h1>
+    <input type="password" id="password-input" placeholder="Enter password">
+    <button onclick="checkPassword()">Unlock</button>
+    <div id="error-msg"></div>
+  </div>
+
+  <!-- Main Content -->
+  <div id="main-content">
+    <header>
+      <h1>💝 For My Bestestest 🫂</h1>
+      <p>Little surprises, games & fun—just for you!</p>
+    </header>
+
+    <section class="grid">
+      <div class="card">
+        <h2>🎁 Surprise #1</h2>
+        <p>A cute little game for you.</p>
+        <a href="game1.html">Open</a>
+      </div>
+
+      <div class="card">
+        <h2>💖 Surprise #2</h2>
+        <p>A special page made just for you.</p>
+        <a href="surprise2.html">Open</a>
+      </div>
+
+      <div class="card">
+        <h2>🌸 Surprise #3</h2>
+        <p>Something sweet & beautiful.</p>
+        <a href="surprise3.html">Open</a>
+      </div>
+    </section>
+
+    <footer>
+      Made with 💕 by Your 🐦
+    </footer>
+  </div>
+
+  <script>
+    function checkPassword() {
+      const input = document.getElementById('password-input').value;
+      const errorMsg = document.getElementById('error-msg');
+      if (input.toLowerCase() === 'kiwi') {
+        document.getElementById('password-container').style.display = 'none';
+        document.getElementById('main-content').style.display = 'flex';
+      } else {
+        errorMsg.textContent = 'Incorrect password! Try again.';
+      }
+    }
+
+    // Optional: Press Enter to submit
+    document.getElementById('password-input').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        checkPassword();
+      }
+    });
+  </script>
+
+</body>
+</html>

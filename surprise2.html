@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Magical Letter Surprise</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #3b0a45, #7b1e3a); /* Maroon gradient */
+      overflow: hidden;
+      font-family: 'Dancing Script', cursive, sans-serif;
+    }
+
+    .envelope {
+      position: relative;
+      width: 220px;
+      height: 140px;
+      background: #800000; /* Dark maroon */
+      border-radius: 6px;
+      cursor: pointer;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+      perspective: 800px;
+      transition: transform 0.4s ease;
+    }
+
+    .flap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 70%;
+      background: #5c0f1a; /* Deeper maroon */
+      border-radius: 6px 6px 0 0;
+      transform-origin: top;
+      transition: transform 1s ease;
+      z-index: 2;
+    }
+
+    .seal {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50px;
+      height: 50px;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 0 12px rgba(255,255,255,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: #800000; /* Maroon seal text */
+      z-index: 3;
+    }
+
+    .letter {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%) translateY(100%);
+      width: 200px;
+      height: 160px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+      padding: 16px;
+      text-align: center;
+      font-size: 18px;
+      line-height: 1.4;
+      opacity: 0;
+      transition: all 1s ease;
+      z-index: 1;
+    }
+
+    .show-letter {
+      transform: translateX(-50%) translateY(-120%);
+      opacity: 1;
+    }
+
+    #confettiCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .replay-btn {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 22px;
+      border: none;
+      border-radius: 22px;
+      background: #fff;
+      color: #800000; /* Maroon text */
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.8s ease;
+      z-index: 10;
+    }
+    .replay-btn.show {
+      opacity: 1;
+    }
+
+    @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500&display=swap');
+  </style>
+</head>
+<body>
+  <canvas id="confettiCanvas"></canvas>
+
+  <div class="envelope" id="envelope">
+    <div class="flap" id="flap"></div>
+    <div class="seal" id="seal">💌</div>
+    <div class="letter" id="letter">
+      To my Bestestest 🫂 💖<br>
+      You make life brighter, funnier, and unforgettable.<br>
+      Forever we'll be together 🫂.
+    </div>
+  </div>
+
+  <button class="replay-btn" id="replayBtn">Replay ✨</button>
+
+  <script>
+    const envelope = document.getElementById("envelope");
+    const flap = document.getElementById("flap");
+    const seal = document.getElementById("seal");
+    const letter = document.getElementById("letter");
+    const replayBtn = document.getElementById("replayBtn");
+    const canvas = document.getElementById("confettiCanvas");
+    const ctx = canvas.getContext("2d");
+
+    let particles = [];
+    let animationId;
+    let opened = false;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    class Particle {
+      constructor(x, y, shape) {
+        this.x = x;
+        this.y = y;
+        this.size = Math.random() * 8 + 6;
+        this.color = ["#800000","#a83232","#c0392b","#ffd166","#ef476f"][Math.floor(Math.random()*5)];
+        this.vx = (Math.random() - 0.5) * 2;
+        this.vy = Math.random() * 3 + 2;
+        this.life = 120;
+        this.shape = shape;
+        this.rotation = Math.random() * Math.PI * 2;
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.life--;
+        this.rotation += 0.05;
+      }
+      draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.rotation);
+        ctx.fillStyle = this.color;
+        if (this.shape === "heart") {
+          ctx.beginPath();
+          ctx.moveTo(0, -this.size/2);
+          ctx.bezierCurveTo(this.size/2, -this.size, this.size, 0, 0, this.size);
+          ctx.bezierCurveTo(-this.size, 0, -this.size/2, -this.size, 0, -this.size/2);
+          ctx.fill();
+        } else {
+          ctx.fillRect(-this.size/2, -this.size/2, this.size, this.size);
+        }
+        ctx.restore();
+      }
+    }
+
+    function createConfetti() {
+      for (let i=0; i<10; i++) {
+        const shape = Math.random() < 0.5 ? "heart" : "confetti";
+        particles.push(new Particle(Math.random() * canvas.width, -10, shape));
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      particles.forEach((p, i) => {
+        p.update();
+        p.draw();
+        if (p.life <= 0 || p.y > canvas.height) particles.splice(i,1);
+      });
+      animationId = requestAnimationFrame(animate);
+    }
+
+    function startSurprise() {
+      if (opened) return;
+      opened = true;
+      seal.style.opacity = 0;
+      flap.style.transform = "rotateX(-160deg)";
+      setTimeout(() => {
+        letter.classList.add("show-letter");
+        replayBtn.classList.add("show");
+        createConfetti();
+        animate();
+        setInterval(createConfetti, 400);
+      }, 1000);
+    }
+
+    envelope.addEventListener("click", startSurprise);
+
+    replayBtn.addEventListener("click", () => {
+      opened = false;
+      flap.style.transform = "";
+      seal.style.opacity = 1;
+      letter.classList.remove("show-letter");
+      replayBtn.classList.remove("show");
+      particles = [];
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+    });
+  </script>
+</body>
+</html>
