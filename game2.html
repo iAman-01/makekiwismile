@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mini Escape Room 🕵️</title>
+<style>
+  body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #1a1a1a, #3b0a0a);
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+  }
+  .room {
+    display: none;
+    max-width: 600px;
+    background: rgba(255,255,255,0.1);
+    padding: 2rem;
+    border-radius: 15px;
+    text-align: center;
+    animation: fadeIn 0.8s ease;
+  }
+  .room.active { display: block; }
+  h1, h2 { margin-bottom: 1rem; }
+  input, button {
+    padding: 10px;
+    margin-top: 1rem;
+    border-radius: 8px;
+    border: none;
+    font-size: 1rem;
+  }
+  input { width: 60%; }
+  button {
+    background: linear-gradient(45deg, #800000, #a52a2a);
+    color: #fff;
+    cursor: pointer;
+    margin-left: 5px;
+  }
+  button:hover {
+    background: linear-gradient(45deg, #a52a2a, #800000);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 80px);
+    gap: 10px;
+    justify-content: center;
+    margin-top: 1rem;
+  }
+  .grid button {
+    width: 80px;
+    height: 80px;
+    font-size: 1.5rem;
+  }
+  @keyframes fadeIn { from {opacity:0; transform:translateY(20px);} to {opacity:1; transform:translateY(0);} }
+
+  /* Room 4 draggable kiwi */
+  #kiwi {
+    font-size: 4rem;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    cursor: grab;
+    user-select: none;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s;
+  }
+
+  /* Room 5 pigeon kisses kiwi */
+  #reward {
+    font-size: 5rem;
+    opacity: 0;
+    animation: fadeInBounce 2s forwards;
+    text-align: center;
+  }
+  @keyframes fadeInBounce {
+    0% { opacity: 0; transform: translateY(-50px); }
+    50% { opacity: 1; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<!-- Room 1 -->
+<div id="room1" class="room active">
+  <h1>🔒 Room 1: Whispered Number</h1>
+  <p>I’m a number with three digits.  
+  My digits don’t add up to my meaning.  
+  Lovers whisper me all the time.  
+  What number am I?</p>
+  <input type="text" id="answer1" placeholder="Enter number">
+  <button onclick="checkAnswer1()">Submit</button>
+  <div id="msg1"></div>
+</div>
+
+<!-- Room 2 -->
+<div id="room2" class="room">
+  <h1>📜 Room 2: Hidden Word</h1>
+  <p>The key is hidden in the first letters of these lines:<br>
+  🌙 <b>Y</b>ielding stars above,<br>
+  🌸 <b>O</b>nly your smile I seek,<br>
+  🔥 <b>U</b>nfolding my heart to you.<br>
+  What is the hidden word?</p>
+  <input type="text" id="answer2" placeholder="Enter word">
+  <button onclick="checkAnswer2()">Submit</button>
+  <div id="msg2"></div>
+</div>
+
+<!-- Room 3 -->
+<div id="room3" class="room">
+  <h1>🔐 Room 3: Pattern Lock</h1>
+  <p>The path to freedom is a straight line of love.<br>
+  Begin at the start of all, pass through the heart, and end at the very last.</p>
+  <div class="grid">
+    <button onclick="patternClick(1)">1</button>
+    <button onclick="patternClick(2)">2</button>
+    <button onclick="patternClick(3)">3</button>
+    <button onclick="patternClick(4)">4</button>
+    <button onclick="patternClick(5)">5</button>
+    <button onclick="patternClick(6)">6</button>
+    <button onclick="patternClick(7)">7</button>
+    <button onclick="patternClick(8)">8</button>
+    <button onclick="patternClick(9)">9</button>
+  </div>
+  <div id="msg3"></div>
+</div>
+
+<!-- Room 4 -->
+<div id="room4" class="room">
+  <h1>🥝 Room 4: Kiwi Tomb Escape</h1>
+  <p>Drag the kiwi to any edge of the screen to escape the tomb.</p>
+  <div id="kiwi">🥝</div>
+  <div id="msg4">
+    <p>Once escaped, answer this riddle:</p>
+    <p>"I fly but have no wings, I coo but am not a dove. What am I?"</p>
+    <input type="text" id="answer4" placeholder="Enter answer">
+    <button onclick="checkAnswer4()">Submit</button>
+    <div id="riddleMsg"></div>
+  </div>
+</div>
+
+<!-- Room 5 -->
+<div id="room5" class="room">
+  <h1>🎉 Surprise!</h1>
+  <p id="reward">🥝❤️🕊️</p>
+  <p>You found the secret! 🫂💖</p>
+  <button onclick="finish()">Continue</button>
+</div>
+
+<script>
+  // === Room 1 ===
+  function checkAnswer1(){
+    let ans = document.getElementById("answer1").value.trim();
+    if(ans === "143"){
+      document.getElementById("room1").classList.remove("active");
+      document.getElementById("room2").classList.add("active");
+    } else {
+      document.getElementById("msg1").textContent = "❌ Try again!";
+    }
+  }
+
+  // === Room 2 ===
+  function checkAnswer2(){
+    let ans = document.getElementById("answer2").value.trim().toLowerCase();
+    if(ans === "you"){
+      document.getElementById("room2").classList.remove("active");
+      document.getElementById("room3").classList.add("active");
+    } else {
+      document.getElementById("msg2").textContent = "❌ Try again!";
+    }
+  }
+
+  // === Room 3 ===
+  let pattern = [1,5,9];
+  let userPattern = [];
+  function patternClick(num){
+    userPattern.push(num);
+    if(userPattern.length === 3){
+      if(JSON.stringify(userPattern) === JSON.stringify(pattern)){
+        document.getElementById("room3").classList.remove("active");
+        document.getElementById("room4").classList.add("active");
+      } else {
+        document.getElementById("msg3").textContent = "❌ Wrong pattern, try again!";
+        userPattern = [];
+      }
+    }
+  }
+
+  // === Room 4: Drag Kiwi ===
+  const kiwi = document.getElementById("kiwi");
+  let offsetX, offsetY;
+  kiwi.addEventListener("mousedown", startDrag);
+  kiwi.addEventListener("touchstart", startDrag);
+
+  function startDrag(e){
+    e.preventDefault();
+    const move = e.type === "mousedown" ? mouseMove : touchMove;
+    const up = e.type === "mousedown" ? "mouseup" : "touchend";
+    const pos = e.type === "mousedown" ? e : e.touches[0];
+    offsetX = pos.clientX - kiwi.getBoundingClientRect().left;
+    offsetY = pos.clientY - kiwi.getBoundingClientRect().top;
+    document.addEventListener(e.type==="mousedown"?"mousemove":"touchmove", move);
+    document.addEventListener(up, stopDrag);
+
+    function stopDrag(){
+      document.removeEventListener(e.type==="mousedown"?"mousemove":"touchmove", move);
+      document.removeEventListener(up, stopDrag);
+      checkEscape();
+    }
+  }
+
+  function mouseMove(e){
+    kiwi.style.left = (e.clientX - offsetX) + "px";
+    kiwi.style.top = (e.clientY - offsetY) + "px";
+  }
+
+  function touchMove(e){
+    const touch = e.touches[0];
+    kiwi.style.left = (touch.clientX - offsetX) + "px";
+    kiwi.style.top = (touch.clientY - offsetY) + "px";
+  }
+
+  function checkEscape(){
+    const rect = kiwi.getBoundingClientRect();
+    if(rect.top < 10 || rect.left < 10 || rect.bottom > window.innerHeight-10 || rect.right > window.innerWidth-10){
+      document.getElementById("msg4").style.display = "block";
+      kiwi.style.display = "none";
+    }
+  }
+
+  // Room 4 Riddle
+  function checkAnswer4(){
+    const ans = document.getElementById("answer4").value.trim().toLowerCase();
+    if(ans === "cloud"){
+      document.getElementById("room4").classList.remove("active");
+      document.getElementById("room5").classList.add("active");
+    } else {
+      document.getElementById("riddleMsg").textContent = "❌ Try again!";
+    }
+  }
+
+  function finish(){
+    window.location.href = "game2surprise.html"; // redirect to final gift page if needed
+  }
+</script>
+</body>
+</html>
