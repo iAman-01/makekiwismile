@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Random Puzzle Surprise</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #ffdde1, #ee9ca7);
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      color: #333;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+    }
+
+    .balloon {
+      width: 80px;
+      height: 100px;
+      background: red;
+      border-radius: 50% 50% 45% 55%;
+      position: absolute;
+      bottom: -150px;
+      cursor: pointer;
+      animation: floatUp 8s linear infinite;
+    }
+
+    @keyframes floatUp {
+      from { transform: translateY(0); }
+      to { transform: translateY(-110vh); }
+    }
+
+    /* Pop animation */
+    @keyframes pop {
+      0% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(2); opacity: 0; }
+    }
+    .popped {
+      animation: pop 0.5s forwards;
+    }
+
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: pink;
+      border-radius: 50%;
+      animation: fall 3s linear forwards;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(-50px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(600px) rotate(720deg); opacity: 0; }
+    }
+
+    #reward {
+      display: none;
+      font-size: 2rem;
+      text-align: center;
+      animation: fadeIn 2s ease forwards;
+      color: #fff;
+      text-shadow: 2px 2px 6px rgba(0,0,0,0.4);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.5); }
+      to { opacity: 1; transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎈 Pop 3 Balloons for a Surprise! 🎉</h1>
+  <div id="reward"></div>
+
+  <script>
+    let popped = 0;
+
+    function createBalloon() {
+      let balloon = document.createElement("div");
+      balloon.className = "balloon";
+      balloon.style.left = Math.random() * window.innerWidth + "px";
+      balloon.style.background = ["#ff4d6d","#ff9a76","#f9ed69","#6a0572","#17b978"][Math.floor(Math.random()*5)];
+      document.body.appendChild(balloon);
+
+      balloon.onclick = function() {
+        balloon.classList.add("popped");
+        setTimeout(() => balloon.remove(), 500);
+        popped++;
+
+        if (popped >= 3) {
+          triggerConfetti();
+          setTimeout(() => {
+            showReward();
+          }, 1500);
+        }
+      };
+
+      setTimeout(() => balloon.remove(), 8000);
+    }
+
+    function triggerConfetti() {
+      for (let i = 0; i < 50; i++) {
+        let confetti = document.createElement("div");
+        confetti.className = "confetti";
+        confetti.style.left = Math.random() * window.innerWidth + "px";
+        confetti.style.top = "0px";
+        confetti.style.background = ["#ff69b4","#ff1493","#ffd700","#00ffff"][Math.floor(Math.random()*4)];
+        document.body.appendChild(confetti);
+        setTimeout(() => confetti.remove(), 3000);
+      }
+    }
+
+    function showReward() {
+      document.querySelector("h1").style.display = "none";
+      const reward = document.getElementById("reward");
+      const rewards = [
+            "🥝💋🕊 Kiwi kisses Pigeon 💖",
+            "🍬❤️ Love Candy Surprise ✨",
+            "🎆 Fireworks of Forever Love 🎇",
+            "☀️ You're my sunshine, always 💛",
+            "🫂 Together is my favorite place 💕",
+            "💎 You're my rarest treasure ✨",
+            "🌸 Life blooms beautifully with you 🌺",
+            "🎶 My heart sings your name 💓",
+            "🍫 Sweetest moments are with you 🍭",
+            "🌙 You light up my darkest nights ⭐️",
+            "🦋 You’re my forever butterfly 💖",
+            "🔥 You spark my soul endlessly ✨",
+            "🕊 Peace is wherever you are 💞",
+            "🍂 You’re my autumn warmth 🍁",
+            "🌊 My love flows like the ocean 🌊",
+            "🌹 A rose forever blooming for you ❤️",
+            "💌 Every heartbeat whispers your name 💘",
+            "✨ You make life sparkle like stardust 🌌",
+            "🍯 Sweeter than honey, that’s you 🐝",
+            "🎡 You’re my favorite ride in life 🎢",
+            "🧸 Hugging you is my happy place 🫂",
+            "🎇 You’re my forever fireworks 💥",
+            "📖 Our story is my favorite book 💕",
+            "🎁 You are the best gift of my life 🎀",
+            "🍀 Lucky to have you, always 💚",
+            "🌻 You’re my sunflower of joy 🌞",
+            "🌈 My rainbow after every storm 🌦",
+            "🍓 You’re the berry to my smoothie 💞",
+            "☕️ Coffee tastes better with you ☕️❤️",
+            "🐦 My little pigeon of happiness 🕊",
+            "🥝 My sweet kiwi of love 💚",
+            "💍 Forever means you and me 💎",
+            "🎨 You color my world with love 🌈",
+            "🎵 Your laughter is my melody 💖",
+            "🍎 You’re the apple to my pie 🥧",
+            "🧩 You complete my puzzle of life 🧸",
+            "🌟 My brightest star in the sky 💫",
+            "🍭 My candy of happiness 💖",
+            "🪄 You’re my everyday magic ✨",
+            "🐚 My ocean pearl of love 🌊",
+            "🐾 Together we leave pawprints 💞",
+            "🎀 Tied to you forever 🎁",
+            "🕯 You light my soul softly 🕊",
+            "📸 You’re my favorite memory 📷",
+            "🎈 You lift me higher 🎉",
+            "🛤 Walking life’s path with you 🥰",
+            "💫 You’re my wish come true 🌠",
+            "🌍 My whole world is you 🌎",
+            "🍷 Drunk in your love 🍸",
+            "🎂 Sweeter than birthday cake 🎉",
+            "🧭 You’re my forever direction 🗺",
+            "🍋 You add zest to my life 🍹",
+            "🎤 My love sings your name 🎶",
+            "🛋 Cozy with you is paradise 💕",
+            "🍦 You’re my ice cream on hot days 🍨",
+            "🌌 Our love is infinite like galaxies ✨",
+            "🕊 My dove of peace 🥰",
+            "🍫 You melt my heart like chocolate 💖",
+            "🎇 You’re my spark of joy 🔥",
+            "🌺 Blooming love forever 🌸",
+            "🎮 You’re my favorite player 2 💕",
+            "💡 You light me up 💫",
+            "🎧 My soul dances to your laughter 🎶",
+            "🍊 You’re my fresh squeeze 🍹",
+            "🏰 My fairytale came true with you 🏰",
+            "🌙 You’re my moonlight comfort 🌙",
+            "💐 You’re my bouquet of joy 🌸",
+            "🎯 You’re my perfect aim 💘",
+            "🍩 Donut know what I’d do without you 🍩❤️",
+            "🚀 To the stars, with you 🚀",
+            "🛡 You’re my safe place 🛡❤️",
+            "💭 I dream of you, awake & asleep ✨",
+            "🥂 Cheers to forever 🍷",
+            "🐻 You’re my snuggle bear 🧸",
+            "🍒 You’re my cherry on top 🍰",
+            "🦄 My magical one 💜",
+            "🐥 You’re my little sunshine chick 🌞",
+            "🎠 Our love is a carousel of joy 🎡",
+            "🐳 Whale you be mine forever? 🐋❤️",
+            "💖 You’re my glittering soul ✨",
+            "🌞 You brighten every day ☀️",
+            "🎆 You burst my heart with love 💥",
+            "🍉 Sweet summer feels with you 🍉",
+            "🥇 You’re my #1 forever 🏆",
+            "💘 Cupid’s favorite couple 💌",
+            "🐧 You’re my penguin for life 🐧❤️",
+            "🎉 Every day with you is a party 🎊",
+            "🛶 Together in the same boat 🚤",
+            "🐝 You’re my honeybee 🐝💛",
+            "🌴 Paradise is you 🌺",
+            "💎 Diamond moments with you 💎",
+            "🍰 Layers of love with you 🎂",
+            "📡 My heart’s signal is always you 📶",
+            "🍀 Lucky charm of my life 🍀",
+            "💞 Heartbeats in sync 💞",
+            "🍹 You’re my tropical escape 🍍",
+            "🥨 Twisted together forever 🥨💖",
+            "🎇 Love exploding like fireworks 🎆",
+            "🥭 Mango moments of sweetness 🥭",
+            "🍔 You’re the burger to my fries 🍟",
+            "🌠 Wishing always for you 🌌",
+            "🎋 You’re my secret wish on stars 🎋"
+      ];
+      const randomReward = rewards[Math.floor(Math.random() * rewards.length)];
+      reward.textContent = randomReward;
+      reward.style.display = "block";
+    }
+
+    // Spawn balloons every 1.5s
+    setInterval(createBalloon, 1500);
+  </script>
+</body>
+</html>
