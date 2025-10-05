@@ -10,439 +10,155 @@
     --bg1:#0b0610;
     --bg2:#2b0632;
   }
-  html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg1),var(--bg2));-webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;}
+  html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg1),var(--bg2));-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;font-family:"Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;}
   .wrap{min-height:100%;display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px;box-sizing:border-box;}
   header{width:100%;max-width:920px;display:flex;align-items:center;justify-content:space-between;gap:12px;color:#ffdce9}
   h1{font-size:18px;margin:0;text-shadow:0 6px 30px rgba(255,107,154,0.08)}
-  #game {
-    width: min(92vw, 920px);
-    aspect-ratio: 1/1;
-    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    border-radius:16px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
-    position:relative;
-    overflow:hidden;
-    touch-action: none;
-  }
+  #game { width:min(92vw,920px); aspect-ratio:1/1; background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:16px; box-shadow:0 10px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.02); position:relative; overflow:hidden; touch-action:none; }
   canvas{width:100%;height:100%;display:block;border-radius:12px;}
-  .controls {
-    width:min(92vw,920px);
-    max-width:920px;
-    display:flex;
-    justify-content:center;
-    gap:14px;
-    margin-top:6px;
-  }
-  .btn {
-    width:64px;height:64px;border-radius:12px;border:none;background:linear-gradient(180deg,rgba(255,255,255,0.03), rgba(255,255,255,0.02));
-    color:var(--accent); font-weight:700;font-size:22px;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(0,0,0,0.45);
-    touch-action: manipulation;
-  }
+  .controls { width:min(92vw,920px); max-width:920px; display:flex; justify-content:center; gap:14px; margin-top:6px; }
+  .btn { width:64px;height:64px;border-radius:12px;border:none;background:linear-gradient(180deg,rgba(255,255,255,0.03), rgba(255,255,255,0.02)); color:var(--accent); font-weight:700;font-size:22px; display:flex;align-items:center;justify-content:center; box-shadow:0 8px 24px rgba(0,0,0,0.45); touch-action: manipulation;}
   .btn:active{transform:translateY(3px) scale(.995)}
   #hud{width:min(92vw,920px);display:flex;justify-content:space-between;color:#ffd6e8;font-size:13px;align-items:center;gap:10px;margin-top:8px}
   #quote{max-width:920px;color:#ffeef6;text-align:center;font-size:15px;min-height:40px}
-  .overlayMsg {
-    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;
-  }
+  .overlayMsg { position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none; }
   .msgBox { pointer-events:auto; background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02)); padding:18px 22px;border-radius:12px;color:#111; max-width:86%; text-align:center; box-shadow:0 10px 30px rgba(0,0,0,0.6); }
   .msgTitle { font-size:18px;color:var(--accent); margin:0 0 6px;}
   .tiny { font-size:12px; color:#ffd6e8; margin-top:8px;}
-  /* confetti style */
   .confetti { position: absolute; width:10px;height:14px;border-radius:2px;transform-origin:center; }
-  @media (max-width:420px){
-    .btn { width:56px;height:56px;font-size:20px }
-    h1{font-size:16px}
-  }
+  @media (max-width:420px){ .btn { width:56px;height:56px;font-size:20px } h1{font-size:16px} }
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <h1>Kiwi Maze — Hard (Mobile) 🥝🕊</h1>
-      <div style="font-size:13px;color:#ffd6e8">Move with buttons or swipe • New maze each play</div>
-    </header>
+<div class="wrap">
+  <header>
+    <h1>Kiwi Maze — Hard (Mobile) 🥝🕊</h1>
+    <div style="font-size:13px;color:#ffd6e8">Move with buttons or swipe • New maze each play</div>
+  </header>
 
-    <div id="game">
-      <canvas id="c"></canvas>
-      <div class="overlayMsg" id="overlay" style="display:none">
-        <div class="msgBox" id="msgBox">
-          <div class="msgTitle" id="msgTitle">You did it!</div>
-          <div id="msgText">🥝 reached 🕊 — love wins!</div>
-          <div class="tiny">Tap anywhere to play again</div>
-        </div>
+  <div id="game">
+    <canvas id="c"></canvas>
+    <div class="overlayMsg" id="overlay" style="display:none">
+      <div class="msgBox" id="msgBox">
+        <div class="msgTitle" id="msgTitle">You did it!</div>
+        <div id="msgText">🥝 reached 🕊 — love wins!</div>
+        <div class="tiny">Tap anywhere to play again</div>
       </div>
-    </div>
-
-    <div class="controls" id="controls">
-      <button class="btn" id="left">◀</button>
-      <button class="btn" id="up">▲</button>
-      <button class="btn" id="down">▼</button>
-      <button class="btn" id="right">▶</button>
-    </div>
-
-    <div id="hud">
-      <div id="timer">Time: 00:00</div>
-      <div id="quote">Tip: Small, careful moves are key. You can also swipe in the maze area.</div>
     </div>
   </div>
 
+  <div class="controls" id="controls">
+    <button class="btn" id="left">◀</button>
+    <button class="btn" id="up">▲</button>
+    <button class="btn" id="down">▼</button>
+    <button class="btn" id="right">▶</button>
+  </div>
+
+  <div id="hud">
+    <div id="timer">Time: 00:00</div>
+    <div id="quote">Tip: Small, careful moves are key. You can also swipe in the maze area.</div>
+  </div>
+</div>
+
 <script>
-/* ========== CONFIG ========== */
-const ROWS = 25;            // odd number, bigger = harder
-const COLS = 25;
-const canvas = document.getElementById('c');
-const ctx = canvas.getContext('2d');
+/* ===== CONFIG ===== */
+const ROWS=25,COLS=25;
+const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
 let cellSize, offsetX, offsetY;
+const kiwiEmoji='🥝',pigeonEmoji='🕊️';
+const quotes=["🥝💋🕊 Kiwi kisses Pigeon 💖","🍬❤️ Love Candy Surprise ✨","🎆 Fireworks of Forever Love 🎇","☀️ You're my sunshine, always 💛"];
+/* ===== STATE ===== */
+let maze, kiwi={x:1,y:1},pigeon={x:COLS-2,y:ROWS-2},hearts=[],confettiParts=[],running=false,startTime=0,timerInterval=null,won=false;
 
-const kiwiEmoji = '🥝';
-const pigeonEmoji = '🕊️';
-
-const quotes = [
-  "🥝💋🕊 Kiwi kisses Pigeon 💖",
-  "🍬❤️ Love Candy Surprise ✨",
-  "🎆 Fireworks of Forever Love 🎇",
-  "☀️ You're my sunshine, always 💛",
-  "🫂 Together is my favorite place 💕",
-  "💫 You make every maze worth solving 🥰",
-  "🌙 My world glows brighter with you 🌸",
-  "💌 You’re my favorite hello and hardest goodbye 💖",
-  "🎀 Every moment with you is magic 💫",
-  "🍓 Sweetest bond — Kiwi & Pigeon forever 🍒",
-  "🎧 Your laughter is my favorite song 💞",
-  "🕊 You flew into my heart and stayed 💕",
-  "🌈 You’re the color in my world of black & white 🎨",
-  "💐 Love blooms wherever you smile 🌹",
-  "🎠 Even in a maze, I’d find my way to you 💫",
-  "💎 You're my rare gem, my forever treasure 💖",
-  "🔥 You set my heart on a cozy fire ❤️",
-  "🌻 Together, we make life beautiful 🌸",
-  "🥰 Every step closer feels like home 🏡",
-  "✨ You're the wish I didn’t know I made 🌙",
-  "💫 We found each other — that’s fate 🕊",
-  "🧸 You make me feel safe and loved 💞",
-  "🍯 You’re my sweetest addiction 💖",
-  "🌹 Every maze leads to you ❤️",
-  "🪄 You’re my favorite kind of magic ✨",
-  "💞 You’re my calm after every storm ☔",
-  "🌟 My heart beats in your rhythm 💓",
-  "💋 Even puzzles can’t keep us apart 🥝🕊",
-  "🌸 I’d cross every maze just to see you smile 💕",
-  "🎁 The gift of you is all I need 🎀",
-  "🍬 Love is sweet — but you’re sweeter 💗",
-  "💖 My heart found its home in you 🕊",
-  "🧩 Two pieces of one perfect puzzle 💞",
-  "🌼 With you, every path feels right 🌸",
-  "🕊 My forever favorite bird 💋",
-  "🥝 You’re my little slice of happiness 🍰",
-  "🌙 The stars look jealous tonight ✨",
-  "💫 You and I — destined to meet, always 💕",
-  "🎆 Every ending with you feels like a beginning 💞",
-  "🌈 Our love paints the sky brighter ❤️",
-  "🫶 You complete my heart’s maze 💗",
-  "💞 My heart whispered — and it said your name 🥝",
-  "🕊 Even lost, I’ll find you every time 💫",
-  "🌸 Your kindness blooms in my heart 🌷",
-  "🥰 You’re the dream I never want to wake from 💕",
-  "🍯 You’re my honey-sweet forever 🍬",
-  "💝 Love is simple — it’s you and me 💞",
-  "🎇 Together we sparkle brighter 💫",
-  "🕊 Found you again, my beautiful bird 💋",
-  "🥝 Forever & always — Kiwi loves Pigeon 💖"
-];
-
-/* ========== STATE ========== */
-let maze; // 2D array: 0 = path, 1 = wall
-let kiwi = {x:1,y:1}; // start
-let pigeon = {x:COLS-2, y:ROWS-2}; // goal
-let hearts = [];
-let confettiParts = [];
-let running = false;
-let startTime = 0;
-let timerInterval = null;
-let won = false;
-
-/* ========== UTIL: Maze generation (DFS backtracker) ========== */
-function makeEmptyMaze(rows, cols){
-  const m = new Array(rows);
-  for(let y=0;y<rows;y++){
-    m[y] = new Array(cols).fill(1);
-  }
-  return m;
-}
-
-function inBounds(x,y){ return x>=0 && y>=0 && x<COLS && y<ROWS; }
-
+/* ===== UTIL ===== */
+function inBounds(x,y){return x>=0&&y>=0&&x<COLS&&y<ROWS;}
+function makeEmptyMaze(rows,cols){return Array.from({length:rows},()=>Array(cols).fill(1));}
 function generateMazeDFS(){
-  maze = makeEmptyMaze(ROWS, COLS);
-  // carve cells at odd coordinates
-  function carve(sx, sy){
-    maze[sy][sx] = 0;
-    const dirs = [[0,-2],[2,0],[0,2],[-2,0]];
-    // randomize
-    for(let i=dirs.length-1;i>0;i--){
-      const j = Math.floor(Math.random()*(i+1));
-      [dirs[i],dirs[j]] = [dirs[j],dirs[i]];
-    }
+  maze=makeEmptyMaze(ROWS,COLS);
+  function carve(sx,sy){
+    maze[sy][sx]=0;
+    const dirs=[[0,-2],[2,0],[0,2],[-2,0]];
+    for(let i=dirs.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [dirs[i],dirs[j]]=[dirs[j],dirs[i]]; }
     for(const [dx,dy] of dirs){
-      const nx = sx + dx, ny = sy + dy;
-      if(inBounds(nx,ny) && maze[ny][nx]===1){
-        maze[ sy + dy/2 ][ sx + dx/2 ] = 0; // remove wall between
-        carve(nx,ny);
-      }
+      const nx=sx+dx, ny=sy+dy;
+      if(inBounds(nx,ny)&&maze[ny][nx]===1){ maze[sy+dy/2][sx+dx/2]=0; carve(nx,ny); }
     }
   }
-  // start carving from (1,1) ensure odd start
-  carve(1,1);
-  // ensure start and goal are paths
-  maze[1][1] = 0;
-  maze[ROWS-2][COLS-2] = 0;
-
-  // place kiwi and pigeon on open cells but try to maximize distance
-  // gather open cells
-  const opens = [];
-  for(let y=0;y<ROWS;y++) for(let x=0;x<COLS;x++) if(maze[y][x]===0) opens.push({x,y});
-  // simple farthest pair heuristic: pick random cell A, find farthest B, then farthest from B
-  const A = opens[Math.floor(Math.random()*opens.length)];
-  let B = A;
-  let bestDist = -1;
-  for(const p of opens){
-    const d = Math.abs(p.x-A.x)+Math.abs(p.y-A.y);
-    if(d>bestDist){ bestDist = d; B = p; }
-  }
-  let C = B; bestDist = -1;
-  for(const p of opens){
-    const d = Math.abs(p.x-B.x)+Math.abs(p.y-B.y);
-    if(d>bestDist){ bestDist = d; C = p; }
-  }
-  kiwi = {x: B.x, y: B.y};
-  pigeon = {x: C.x, y: C.y};
+  carve(1,1); maze[1][1]=0; maze[ROWS-2][COLS-2]=0;
+  // pick farthest open cells for kiwi & pigeon
+  const opens=[]; for(let y=0;y<ROWS;y++) for(let x=0;x<COLS;x++) if(maze[y][x]===0) opens.push({x,y});
+  const A=opens[Math.floor(Math.random()*opens.length)]; let B=A,best=-1; for(const p of opens){const d=Math.abs(p.x-A.x)+Math.abs(p.y-A.y);if(d>best){best=d;B=p;}}
+  let C=B; best=-1; for(const p of opens){const d=Math.abs(p.x-B.x)+Math.abs(p.y-B.y);if(d>best){best=d;C=p;}}
+  kiwi={x:B.x,y:B.y}; pigeon={x:C.x,y:C.y};
 }
 
-/* ========== RENDERING ========== */
+/* ===== DRAW ===== */
 function resizeCanvas(){
-  const rect = document.getElementById('game').getBoundingClientRect();
-  canvas.width = Math.floor(rect.width * devicePixelRatio);
-  canvas.height = Math.floor(rect.height * devicePixelRatio);
-  ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
-  // compute cellSize to fit grid
-  cellSize = Math.floor(Math.min(rect.width / COLS, rect.height / ROWS));
-  // center grid in canvas
-  offsetX = Math.floor((rect.width - cellSize * COLS) / 2);
-  offsetY = Math.floor((rect.height - cellSize * ROWS) / 2);
-  draw();
+  const rect=document.getElementById('game').getBoundingClientRect();
+  canvas.width=Math.floor(rect.width*devicePixelRatio);
+  canvas.height=Math.floor(rect.height*devicePixelRatio);
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.scale(devicePixelRatio,devicePixelRatio);
+  cellSize=Math.floor(Math.min(rect.width/COLS,rect.height/ROWS));
+  offsetX=Math.floor((rect.width-cellSize*COLS)/2);
+  offsetY=Math.floor((rect.height-cellSize*ROWS)/2);
 }
-window.addEventListener('resize', resizeCanvas);
-
-/* draw function */
 function draw(){
-  // background
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  const w = canvas.width/devicePixelRatio, h = canvas.height/devicePixelRatio;
-  // soft background
-  const g = ctx.createLinearGradient(0,0,0,h);
-  g.addColorStop(0,'rgba(255,245,250,0.02)');
-  g.addColorStop(1,'rgba(0,0,0,0.18)');
-  ctx.fillStyle = g;
-  ctx.fillRect(0,0,w,h);
-
-  // draw maze cells
+  const now=performance.now();
+  // draw maze
   for(let y=0;y<ROWS;y++){
     for(let x=0;x<COLS;x++){
-      const px = offsetX + x*cellSize, py = offsetY + y*cellSize;
-      if(maze[y][x]===1){
-        // wall: draw with gradient and subtle stroke
-        ctx.fillStyle = "#2b1b2b";
-        ctx.fillRect(px,py,cellSize,cellSize);
-        // subtle inner highlight
-        ctx.fillStyle = "rgba(255,107,154,0.03)";
-        ctx.fillRect(px+1,py+1,cellSize-2,cellSize-2);
-      } else {
-        // path
-        ctx.fillStyle = "rgba(255,255,255,0.01)";
-        ctx.fillRect(px,py,cellSize,cellSize);
-      }
+      const px=offsetX+x*cellSize, py=offsetY+y*cellSize;
+      ctx.fillStyle=maze[y][x]===1?"#2b1b2b":"rgba(255,255,255,0.01)";
+      ctx.fillRect(px,py,cellSize,cellSize);
     }
   }
-
-  // hearts trail
-  const now = performance.now();
+  // draw hearts
   for(let i=hearts.length-1;i>=0;i--){
-    const h = hearts[i];
-    const age = now - h.t;
-    if(age>800){ hearts.splice(i,1); continue; }
-    const progress = age/800;
-    ctx.globalAlpha = 1 - progress;
-    ctx.font = `${Math.floor(cellSize*0.42)}px serif`;
-    ctx.textAlign = 'center';
-    ctx.fillText('💖', offsetX + h.x*cellSize + cellSize/2, offsetY + h.y*cellSize + cellSize/2 + (cellSize*0.12));
-    ctx.globalAlpha = 1;
+    const h=hearts[i],age=now-h.t;
+    if(age>800){hearts.splice(i,1);continue;}
+    ctx.globalAlpha=1-age/800;
+    ctx.font=`${Math.floor(cellSize*0.42)}px serif`; ctx.textAlign='center';
+    ctx.fillText('💖',offsetX+h.x*cellSize+cellSize/2,offsetY+h.y*cellSize+cellSize/2+cellSize*0.12);
+    ctx.globalAlpha=1;
   }
-
-  // draw pigeon (goal)
-  ctx.font = `${Math.floor(cellSize*0.9)}px serif`;
-  ctx.textAlign = 'center';
-  ctx.fillText(pigeonEmoji, offsetX + pigeon.x*cellSize + cellSize/2, offsetY + pigeon.y*cellSize + cellSize/2 + (cellSize*0.12));
-
-  // draw kiwi (player)
-  ctx.font = `${Math.floor(cellSize*0.92)}px serif`;
-  ctx.textAlign = 'center';
-  ctx.fillText(kiwiEmoji, offsetX + kiwi.x*cellSize + cellSize/2, offsetY + kiwi.y*cellSize + cellSize/2 + (cellSize*0.12));
-
-  // confetti
-  for(let i=confettiParts.length-1;i>=0;i--){
-    const p = confettiParts[i];
-    const age = now - p.t;
-    if(age > p.life){ confettiParts.splice(i,1); continue; }
-    const prog = age / p.life;
-    ctx.save();
-    ctx.globalAlpha = 1 - prog;
-    ctx.translate(p.x, p.y + p.vy*prog*age/20);
-    ctx.rotate(p.rot * prog);
-    ctx.fillStyle = p.color;
-    ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
-    ctx.restore();
-  }
-
+  // draw goal
+  ctx.font=`${Math.floor(cellSize*1.2)}px serif`; ctx.textAlign='center';
+  ctx.fillText(pigeonEmoji,offsetX+pigeon.x*cellSize+cellSize/2,offsetY+pigeon.y*cellSize+cellSize/2+cellSize*0.12);
+  // draw kiwi
+  ctx.fillText(kiwiEmoji,offsetX+kiwi.x*cellSize+cellSize/2,offsetY+kiwi.y*cellSize+cellSize/2+cellSize*0.12);
   requestAnimationFrame(draw);
 }
 
-/* ========== MOVEMENT & GAME LOGIC ========== */
-function showHeartAt(x,y){
-  hearts.push({x,y,t:performance.now()});
-  if(hearts.length>40) hearts.shift();
-}
+/* ===== MOVEMENT ===== */
+function showHeartAt(x,y){hearts.push({x,y,t:performance.now()}); if(hearts.length>40) hearts.shift();}
+function tryMove(dx,dy){if(won) return; const nx=kiwi.x+dx,ny=kiwi.y+dy;if(!inBounds(nx,ny)||maze[ny][nx]===1)return; kiwi={x:nx,y:ny}; showHeartAt(nx,ny); checkWin(); if(!running) startTimer();}
+function checkWin(){if(kiwi.x===pigeon.x&&kiwi.y===pigeon.y&&!won){won=true; stopTimer(); showWin(quotes[Math.floor(Math.random()*quotes.length)]);}}
+function showWin(text){document.getElementById('overlay').style.display='flex'; document.getElementById('msgText').textContent=text; document.getElementById('quote').textContent=text; document.getElementById('overlay').onclick=()=>{document.getElementById('overlay').style.display='none'; restart();};}
 
-function tryMove(dx,dy){
-  if(won) return;
-  const nx = kiwi.x + dx, ny = kiwi.y + dy;
-  if(!inBounds(nx,ny)) return;
-  if(maze[ny][nx]===1) return; // blocked by wall
-  kiwi.x = nx; kiwi.y = ny;
-  showHeartAt(kiwi.x, kiwi.y);
-  checkWin();
-  if(!running) startTimer();
-}
+/* ===== TIMER ===== */
+function formatTime(ms){const s=Math.floor(ms/1000); return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;}
+function startTimer(){if(running)return;running=true;startTime=performance.now();timerInterval=setInterval(()=>{document.getElementById('timer').textContent='Time:'+formatTime(performance.now()-startTime);},500);}
+function stopTimer(){running=false;clearInterval(timerInterval); timerInterval=null;}
 
-function checkWin(){
-  if(kiwi.x === pigeon.x && kiwi.y === pigeon.y && !won){
-    won = true;
-    stopTimer();
-    // pick random quote
-    const q = quotes[Math.floor(Math.random()*quotes.length)];
-    showWin(q);
-  }
-}
+/* ===== INPUT ===== */
+document.getElementById('left').addEventListener('click',()=>tryMove(-1,0));
+document.getElementById('up').addEventListener('click',()=>tryMove(0,-1));
+document.getElementById('down').addEventListener('click',()=>tryMove(0,1));
+document.getElementById('right').addEventListener('click',()=>tryMove(1,0));
+let sx=0,sy=0;
+canvas.addEventListener('touchstart',e=>{const t=e.touches[0];sx=t.clientX;sy=t.clientY;if(!running) startTimer();},{passive:true});
+canvas.addEventListener('touchend',e=>{const t=e.changedTouches[0],dx=t.clientX-sx,dy=t.clientY-sy;const absX=Math.abs(dx),absY=Math.abs(dy);if(Math.max(absX,absY)<20)return;if(absX>absY) dx>0?tryMove(1,0):tryMove(-1,0); else dy>0?tryMove(0,1):tryMove(0,-1);},{passive:true});
+window.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')tryMove(-1,0); if(e.key==='ArrowUp')tryMove(0,-1); if(e.key==='ArrowRight')tryMove(1,0); if(e.key==='ArrowDown')tryMove(0,1);});
 
-/* ========== CONFETTI ========== */
-function spawnConfetti(){
-  for(let i=0;i<80;i++){
-    confettiParts.push({
-      x: offsetX + (COLS/2 + (Math.random()-0.5)*6)*cellSize,
-      y: offsetY + (ROWS/2 + (Math.random()-0.5)*6)*cellSize,
-      w: 6 + Math.random()*8,
-      h: 8 + Math.random()*8,
-      vx: (Math.random()-0.5)*6,
-      vy: 30 + Math.random()*30,
-      rot: (Math.random()-0.5)*8,
-      color: `hsl(${Math.floor(Math.random()*360)},80%,60%)`,
-      t: performance.now(),
-      life: 2000 + Math.random()*1400
-    });
-  }
-}
+/* ===== RESTART ===== */
+function restart(){won=false; running=false; hearts=[]; generateMazeDFS(); document.getElementById('timer').textContent='Time:00:00'; document.getElementById('quote').textContent="Tip: Small, careful moves are key."; resizeCanvas(); draw();}
 
-/* ========== UI: Win overlay & quote ========== */
-const overlay = document.getElementById('overlay');
-const msgBox = document.getElementById('msgBox');
-const msgTitle = document.getElementById('msgTitle');
-const msgText = document.getElementById('msgText');
-const quoteEl = document.getElementById('quote');
-
-function showWin(text){
-  spawnConfetti();
-  msgTitle.textContent = 'Love Unlocked!';
-  msgText.textContent = text;
-  overlay.style.display = 'flex';
-  quoteEl.textContent = text;
-  // subtle pulse
-  setTimeout(()=>overlay.style.display='flex', 30);
-  // tap to restart
-  overlay.onclick = () => { overlay.style.display='none'; restart(); };
-}
-
-/* ========== TIMER ========== */
-function formatTime(ms){
-  const s = Math.floor(ms/1000);
-  const mm = String(Math.floor(s/60)).padStart(2,'0');
-  const ss = String(s%60).padStart(2,'0');
-  return `${mm}:${ss}`;
-}
-function startTimer(){
-  if(running) return;
-  running = true;
-  startTime = performance.now();
-  document.getElementById('timer').textContent = 'Time: 00:00';
-  timerInterval = setInterval(()=>{
-    const elapsed = performance.now() - startTime;
-    document.getElementById('timer').textContent = 'Time: ' + formatTime(elapsed);
-  }, 500);
-}
-function stopTimer(){
-  running = false;
-  clearInterval(timerInterval);
-  timerInterval = null;
-}
-
-/* ========== INPUT: Buttons & swipe ========== */
-document.getElementById('left').addEventListener('click', ()=> tryMove(-1,0));
-document.getElementById('up').addEventListener('click', ()=> tryMove(0,-1));
-document.getElementById('down').addEventListener('click', ()=> tryMove(0,1));
-document.getElementById('right').addEventListener('click', ()=> tryMove(1,0));
-
-// swipe inside canvas
-let sx=0, sy=0;
-canvas.addEventListener('touchstart', (e)=> { const t=e.touches[0]; sx=t.clientX; sy=t.clientY; if(!running) startTimer(); }, {passive:true});
-canvas.addEventListener('touchend', (e)=> {
-  const t = e.changedTouches[0];
-  const dx = t.clientX - sx, dy = t.clientY - sy;
-  const absX = Math.abs(dx), absY = Math.abs(dy);
-  if(Math.max(absX, absY) < 20) return; // tap small
-  if(absX > absY) {
-    if(dx > 0) tryMove(1,0); else tryMove(-1,0);
-  } else {
-    if(dy > 0) tryMove(0,1); else tryMove(0,-1);
-  }
-}, {passive:true});
-
-// keyboard arrows also (useful in emulator)
-window.addEventListener('keydown', (e)=> {
-  if(e.key === 'ArrowLeft') tryMove(-1,0);
-  if(e.key === 'ArrowUp') tryMove(0,-1);
-  if(e.key === 'ArrowRight') tryMove(1,0);
-  if(e.key === 'ArrowDown') tryMove(0,1);
-});
-
-/* ========== RESTART ========== */
-function restart(){
-  won = false; running = false;
-  generateMazeDFS();
-  // place kiwi/pigeon already handled in generator
-  hearts = []; confettiParts = [];
-  document.getElementById('timer').textContent = 'Time: 00:00';
-  quoteEl.textContent = "Tip: Small, careful moves are key. You can also swipe in the maze area.";
-  overlay.style.display = 'none';
-  draw(); // draw immediately
-}
-
-/* ========== INIT ========== */
-generateMazeDFS();
-resizeCanvas();
-draw();
-
-/* start responsive behavior */
-window.addEventListener('orientationchange', ()=> setTimeout(resizeCanvas,200));
-window.addEventListener('load', () => setTimeout(resizeCanvas,120));
-
+/* ===== INIT ===== */
+generateMazeDFS(); resizeCanvas(); draw();
+window.addEventListener('resize',resizeCanvas);
+window.addEventListener('orientationchange',()=>setTimeout(resizeCanvas,200));
 </script>
 </body>
 </html>
