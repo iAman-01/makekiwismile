@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>TDS Shuffle — Truths of the Heart</title>
+<style>
+  :root{
+    --bg1:#0b0610;
+    --bg2:#3b0a0a;
+    --accent:#ff6b9a;
+    --card:#120612;
+  }
+  html,body{
+    height:100%;
+    margin:0;
+    font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background: linear-gradient(135deg,var(--bg1), var(--bg2));
+    color: #fff;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:16px;
+    box-sizing:border-box;
+  }
+
+  .wrap{
+    width:min(980px,98vw);
+    max-width:980px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    align-items:stretch;
+  }
+
+  header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+  }
+  h1{
+    margin:0;
+    font-size:18px;
+    color: #ffd6e8;
+    text-shadow: 0 6px 30px rgba(255,107,154,0.06);
+  }
+  .hint { font-size:12px; color:#f7d7e0; opacity:0.9; }
+
+  #card{
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius:16px;
+    padding:18px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    align-items:center;
+    min-height:200px;
+    position:relative;
+    overflow:hidden;
+  }
+
+  #question {
+    font-size:18px;
+    line-height:1.4;
+    text-align:center;
+    padding:6px 12px;
+    color:#fff;
+    min-height:96px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    opacity:0;
+    transform: scale(.98);
+    transition: all 260ms cubic-bezier(.2,.9,.3,1);
+    user-select: text;
+  }
+  #question.show { opacity:1; transform: scale(1); }
+
+  .controls {
+    display:flex;
+    gap:10px;
+    width:100%;
+    justify-content:center;
+    flex-wrap:wrap;
+    margin-top:6px;
+  }
+
+  .btn {
+    background: linear-gradient(180deg, #3b0830, #661233);
+    color: #ffd6e8;
+    border: none;
+    padding: 14px 18px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 16px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.45);
+    min-width:110px;
+    text-align:center;
+    touch-action: manipulation;
+  }
+  .btn.ghost {
+    background:transparent;
+    border:1px solid rgba(255,255,255,0.06);
+    color:#ffd6e8;
+    min-width:88px;
+  }
+  .btn:active { transform: translateY(2px); }
+
+  #meta {
+    display:flex;
+    gap:8px;
+    justify-content:center;
+    width:100%;
+  }
+  .pill {
+    background: rgba(255,255,255,0.02);
+    padding:8px 12px;
+    border-radius:999px;
+    font-size:13px;
+    color:#ffd6e8;
+  }
+
+  #quoteFooter {
+    text-align:center;
+    color:#ffdce6;
+    font-size:13px;
+    min-height:42px;
+    margin-top:6px;
+  }
+
+  /* floating emoji particles */
+  .particle {
+    position:absolute;
+    font-size:20px;
+    pointer-events:none;
+    opacity:0;
+    transform: translateY(0) scale(.6);
+    transition: transform 700ms cubic-bezier(.2,.9,.3,1), opacity 700ms;
+    will-change: transform, opacity;
+  }
+
+  /* confetti */
+  .confetti {
+    position:absolute;
+    width:8px;
+    height:12px;
+    border-radius:2px;
+    pointer-events:none;
+  }
+
+  /* small devices tweaks */
+  @media (max-width:420px){
+    #question { font-size:16px; padding:8px; min-height:86px;}
+    .btn { font-size:15px; padding:12px 14px; min-width:92px; }
+    h1{font-size:16px}
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Truths of the Heart — Shuffle & Spill</h1>
+      <div class="hint">Tap Shuffle — answer honestly. Keep it safe, consensual & kind.</div>
+    </header>
+
+    <div id="card">
+      <div id="question" aria-live="polite">Tap <strong>Shuffle</strong> to reveal a question.</div>
+
+      <div id="meta" style="display:none">
+        <div class="pill" id="cat">Romance</div>
+        <div class="pill" id="diff">Deep</div>
+      </div>
+
+      <div class="controls">
+        <button class="btn" id="shuffle">🔀 Shuffle</button>
+        <button class="btn ghost" id="copyBtn">📋 Copy</button>
+        <button class="btn ghost" id="shareBtn">🔗 Share</button>
+      </div>
+
+      <div id="quoteFooter">Share a moment — the best answers come from the heart.</div>
+
+      <!-- particles container -->
+      <div id="particles" aria-hidden="true"></div>
+    </div>
+  </div>
+
+<script>
+/* ---------------- QUESTIONS (exactly from user) ---------------- */
+const QUESTIONS = [
+"What's one thing you only do when you're alone?",
+"What's one thing you wish people/I knew about you?",
+"What crime would you commit if you knew you'd never get caught?",
+"What's your biggest regret?",
+"What was the best day of your life?",
+"What was the worst day of your life?",
+"What do you love most about my body?",
+"What typically non-sexual thing turns you on?",
+"When was the last time you masturbated?",
+"What article of clothing in my closet do you find the sexiest?",
+"What's your favorite sex act to receive?",
+"What's your favorite sex act to give?",
+"What's your favorite sex position?",
+"What sex toy do you want to try that you haven't already?",
+"What was the last thing you Googled?",
+"Who was your first celebrity crush?",
+"What's the most unique thing you've ever eaten?",
+"If you had to be on a reality show, which would it be?",
+"What embarrassing fashion trend did you take part in?",
+"What's the most embarrassing movie that you consider to be one of your faves?",
+"What was the most embarrassing song on your Spotify Wrapped last year?",
+"What's the worst gift you've ever received?",
+"What's the best piece of advice you've ever recieved?",
+"When was the last time you cried?",
+"If you could do any job in the world, what would it be?",
+"If you never had to work again, how would you spend your time?",
+"What's your biggest fear about our relationship?",
+"Have I ever made you jealous?",
+"What's the biggest secret you've kept from your parents?",
+"What's the most illegal thing you've ever done?",
+"What was the last dream you had?",
+"What's your favorite childhood memory?",
+"What was your first impression of me?",
+"What's your favorite memory of us?",
+"What's something you wish we did more often?",
+"What's a song that reminds you of me?",
+"When did you first know that you were in love with me?",
+"What's something you think could improve our relationship?",
+"What first attracted you to me?",
+"What movie scene would you want us to recreate?",
+"When was the last time you lied?",
+"When was the last time you cried?",
+"What's your biggest fear?",
+"What's your biggest fantasy?",
+"Who's the last person you searched on Instagram?",
+"What's the strangest thing you've ever eaten?",
+"What's a secret you've never told anyone?",
+"Do you have a hidden talent?",
+"Who was your first celebrity crush?",
+"Have you ever cheated in an exam?",
+"If you were going to be on a reality TV show, which would it be?",
+"What's your biggest insecurity?",
+"What's the biggest mistake you've ever made?",
+"What's one thing you hate people knowing about you?",
+"What's the best thing anyone's ever done for you?",
+"What's your worst habit?",
+"What's one thing you wish people knew about you?",
+"What's the best piece of advice you've been given?",
+"What's the most you've spent on a night out?",
+"Have you ever returned or re-gifted a present?",
+"Do you have a favourite sibling?",
+"What have you purchased that's been the biggest waste of money?",
+"How would you rate your looks on a scale of 1 to 10?",
+"What celebrity do you look up to?",
+"If you could be one celebrity for a day, who would it be?",
+"If you could do any job in the world, what would it be?",
+"What's your dream life?",
+"What do you value the most - money, fame, success, friends, family, etc?",
+"If you had to marry someone in this room, who would it be and why?",
+"What’s one movie you’re embarrassed to admit you enjoy?",
+"What music artist do you secretly think is overrated?",
+"What’s your most controversial political opinion?",
+"Name something you can’t live without",
+"Where do you think you’ll be in five years time?",
+"What's on your 'On Repeat' Spotify playlist right now?",
+"How well do you think you’d do in a horror movie?",
+"How many stuffed animals do you own?",
+"Did you ever get in trouble at school? And if so what for?",
+"Do you have any phobias?",
+"What is your love language?",
+"Who in your phone book would you least like to call right now?",
+"What was the most inappropriate time you farted?",
+"What's something you really hope your family never finds out about?",
+"What TV character do you relate to the most?",
+"What was the first thing you thought about me in a romantic or sensual way?",
+"Is there a particular outfit of mine that you can't get out of your mind?",
+"Do you enjoy dirty talk? ",
+"If you could swap bodies with any celebrity for a day, who would it be and why?",
+"What’s your browsing history for 3 days?",
+"One thing you would do, if you were invisible?",
+"What are some things you think about sitting on toilet?",
+"If you farted in an elevator full of people, what would be your reaction?",
+"Weirdest thing you have done in front of the mirror?",
+"What’s the most unusual talent you have that most people don’t know about?",
+"What’s the most hilarious mistake you’ve made while cooking or baking?",
+"Most embarrassing moment in public?",
+"What is your favorite thing about our relationship?",
+"What is one challenge we have faced as a couple and how did we overcome it?",
+"Have you ever had doubts about our relationship? If so, how did you handle them?",
+"What is one area in our relationship that you think we can work on or improve?",
+"How do you see our relationship evolving and deepening in the next five years?",
+"What is one habit or routine in our relationship that you find particularly comforting or meaningful?",
+"What is one thing you believe sets our relationship apart from others?",
+"How do you feel our relationship has positively impacted your overall happiness and well-being?"
+];
+
+/* ---------------- core state ---------------- */
+let pool = [...QUESTIONS];
+let used = [];
+const qEl = document.getElementById('question');
+const meta = document.getElementById('meta');
+const catEl = document.getElementById('cat');
+const diffEl = document.getElementById('diff');
+const shuffleBtn = document.getElementById('shuffle');
+const particles = document.getElementById('particles');
+const copyBtn = document.getElementById('copyBtn');
+const shareBtn = document.getElementById('shareBtn');
+const footer = document.getElementById('quoteFooter');
+
+/* utility: pick random non-empty question; don't repeat until exhausted */
+function pickRandom(){
+  if(pool.length === 0){
+    pool = [...used];
+    used = [];
+  }
+  // pick until non-empty (skip blanks in list)
+  let idx, item;
+  let attempts = 0;
+  do{
+    idx = Math.floor(Math.random()*pool.length);
+    item = pool[idx];
+    attempts++;
+    if(attempts > 200) break;
+  } while(!item || item.trim().length === 0);
+  // remove from pool and move to used
+  pool.splice(idx,1);
+  used.push(item);
+  return item;
+}
+
+/* show question with animation and particles */
+function showQuestion(q){
+  // accessibility
+  qEl.classList.remove('show');
+  setTimeout(()=> {
+    qEl.textContent = q;
+    qEl.classList.add('show');
+  }, 60);
+
+  // small footer text
+  footer.textContent = "Be honest, be kind. Tap Copy to save or Share to send.";
+
+  // burst animated floating emojis + confetti
+  spawnParticles();
+  burstConfetti();
+
+  // small vibration feedback on supported devices
+  if(navigator.vibrate) navigator.vibrate(60);
+}
+
+/* UI actions */
+shuffleBtn.addEventListener('click', ()=> {
+  const q = pickRandom();
+  showQuestion(q);
+});
+
+copyBtn.addEventListener('click', () => {
+  const text = qEl.textContent || "";
+  navigator.clipboard?.writeText(text).then(()=> {
+    footer.textContent = "Question copied to clipboard ✅";
+  }).catch(()=> {
+    footer.textContent = "Press and hold the question to copy.";
+  });
+});
+
+shareBtn.addEventListener('click', async () => {
+  const text = qEl.textContent || "";
+  if(navigator.share){
+    try{
+      await navigator.share({ title: 'Truths of the Heart', text });
+      footer.textContent = "Shared ❤️";
+    } catch(e){
+      footer.textContent = "Share cancelled";
+    }
+  } else {
+    // fallback: copy
+    navigator.clipboard?.writeText(text).then(()=> footer.textContent = "No Share API — copied instead ✅");
+  }
+});
+
+/* particles: floating emojis (kiwi, kiss, pigeon, sparkle) */
+function spawnParticles(){
+  const emojis = ['🥝','💋','🕊️','✨'];
+  const count = 10 + Math.floor(Math.random()*6);
+  for(let i=0;i<count;i++){
+    const el = document.createElement('div');
+    el.className = 'particle';
+    el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    // random start around card center
+    const cardRect = document.getElementById('card').getBoundingClientRect();
+    const startX = cardRect.left + cardRect.width/2 + (Math.random()*140-70);
+    const startY = cardRect.top + cardRect.height/2 + (Math.random()*40-20);
+    el.style.left = (startX) + 'px';
+    el.style.top = (startY) + 'px';
+    document.body.appendChild(el);
+
+    // animate outward
+    requestAnimationFrame(()=> {
+      el.style.opacity = 1;
+      const tx = (Math.random()-0.5) * 240;
+      const ty = - (120 + Math.random()*220);
+      el.style.transform = `translate(${tx}px, ${ty}px) scale(1)`;
+      el.style.transition = 'transform 900ms cubic-bezier(.2,.9,.3,1), opacity 900ms';
+      setTimeout(()=> {
+        el.style.opacity = 0;
+        setTimeout(()=> el.remove(), 900);
+      }, 900);
+    });
+  }
+}
+
+/* confetti */
+function burstConfetti(){
+  const colors = ['#ff6b9a','#ffd166','#8be9a9','#b39cff','#ffd6e8'];
+  const cardRect = document.getElementById('card').getBoundingClientRect();
+  for(let i=0;i<36;i++){
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = (cardRect.left + cardRect.width/2 + (Math.random()*160-80)) + 'px';
+    c.style.top = (cardRect.top + cardRect.height/2 + (Math.random()*30-10)) + 'px';
+    c.style.background = colors[Math.floor(Math.random()*colors.length)];
+    c.style.transform = `translate(0,0) rotate(${Math.random()*360}deg)`;
+    document.body.appendChild(c);
+    // animate
+    const tx = (Math.random()-0.5)*320;
+    const ty = 240 + Math.random()*300;
+    const rot = (Math.random()-0.5)*720;
+    c.animate([
+      { transform:`translate(0,0) rotate(${Math.random()*360}deg)`, opacity:1 },
+      { transform:`translate(${tx}px, ${ty}px) rotate(${rot}deg)`, opacity:0 }
+    ], { duration: 1600 + Math.random()*800, easing: 'cubic-bezier(.2,.9,.3,1)'});
+    setTimeout(()=> c.remove(), 2000 + Math.random()*1000);
+  }
+}
+
+/* allow tap on question to copy */
+qEl.addEventListener('click', ()=> {
+  const txt = qEl.textContent || "";
+  navigator.clipboard?.writeText(txt).then(()=> footer.textContent = "Question copied to clipboard ✅");
+});
+
+/* keyboard quick shuffle for desktop testing */
+window.addEventListener('keydown', e => {
+  if(e.key === ' ') { shuffleBtn.click(); e.preventDefault(); }
+});
+
+/* init: pre-shuffle pool to randomise initial order */
+(function init(){
+  // shuffle pool
+  for(let i=pool.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  // show an initial random prompt quietly
+  setTimeout(()=> {
+    const first = pickRandom();
+    showQuestion(first);
+  }, 180);
+})();
+</script>
+</body>
+</html>
